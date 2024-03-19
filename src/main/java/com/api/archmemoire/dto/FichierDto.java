@@ -15,6 +15,6 @@ public class FichierDto {
     private Long id;
     private String emailExpediteur;
     private String nom;
-    private List<String> urlsJointPieces;
+    private String urlsJointPieces;
     private Date date;
 }

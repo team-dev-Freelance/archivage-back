@@ -42,7 +42,7 @@ public class Fichier implements Serializable {
     private byte[] secretKey;
 
     @Column
-    private List<String> urlJointPieces;
+    private String urlJointPieces;
 
     @ManyToOne
     @JoinColumn(name = "UTILISATEUR_ID")
