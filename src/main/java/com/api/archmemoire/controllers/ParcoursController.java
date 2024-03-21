@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/parcours")
+@RequestMapping("/api/v1/admin/parcours")
 public class ParcoursController {
 
    private ParcoursService parcoursService;

@@ -2,9 +2,7 @@ package com.api.archmemoire.services;
 
 import com.api.archmemoire.entities.*;
 import com.api.archmemoire.exceptions.*;
-import com.api.archmemoire.repositories.CategorieRepo;
 import com.api.archmemoire.repositories.JuryRepo;
-import com.api.archmemoire.repositories.KeyWorldsRepo;
 import com.api.archmemoire.repositories.MemoireRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,19 +19,15 @@ public class MemoireService {
     private AnneeAcademiqueService anneeAcademiqueService;
     private DepartementService departementService;
     private ParcoursService parcoursService;
-    private KeyWorldsRepo keyWorldsRepo;
-    private CategorieRepo categorieRepo;
     private JuryRepo juryRepo;
 
     @Autowired
-    public MemoireService(MemoireRepo memoireRepo, EtudiantService etudiantService, AnneeAcademiqueService anneeAcademiqueService, DepartementService departementService, ParcoursService parcoursService, KeyWorldsRepo keyWorldsRepo, CategorieRepo categorieRepo, JuryRepo juryRepo) {
+    public MemoireService(MemoireRepo memoireRepo, EtudiantService etudiantService, AnneeAcademiqueService anneeAcademiqueService, DepartementService departementService, ParcoursService parcoursService, JuryRepo juryRepo) {
         this.memoireRepo = memoireRepo;
         this.etudiantService = etudiantService;
         this.anneeAcademiqueService = anneeAcademiqueService;
         this.departementService = departementService;
         this.parcoursService = parcoursService;
-        this.keyWorldsRepo = keyWorldsRepo;
-        this.categorieRepo = categorieRepo;
         this.juryRepo = juryRepo;
     }
 
@@ -47,17 +41,13 @@ public class MemoireService {
         if (memoire.getTheme() == null){
             throw new NotFoundException("Veuillez ajouter un theme de memoire");
         }
-        if (memoire.getKeyWorlds().isEmpty()){
+        if (memoire.getKeyworlds() == null){
             throw new NotFoundException("Veuillez renseigner les mots cles de ce memoire");
-        }
-        if (memoire.getCategorie() == null){
-            throw new NotFoundException("Veuillez renseigner une categorie pour ce memoire");
         }
 
         Memoire newMemoire = new Memoire();
         newMemoire.setTheme(memoire.getTheme());
         newMemoire.setActive(memoire.getActive());
-        newMemoire.setCategorie(memoire.getCategorie());
         newMemoire.setUrlFile(memoire.getUrlFile());
         newMemoire.getJury()
                 .addAll(memoire
@@ -68,15 +58,7 @@ public class MemoireService {
                             newJury.getMemoires().add(newMemoire);
                             return newJury;
                         }).collect(Collectors.toList()));
-        newMemoire.getKeyWorlds()
-                .addAll(memoire
-                        .getKeyWorlds()
-                        .stream()
-                        .map(keyWorlds -> {
-                            KeyWorlds newKeyWorlds = keyWorldsRepo.findById(keyWorlds.getId()).orElse(null);
-                            newKeyWorlds.getMemoires().add(newMemoire);
-                            return newKeyWorlds;
-                        }).collect(Collectors.toList()));
+        newMemoire.setKeyworlds(memoire.getKeyworlds());
 
         return memoireRepo.save(newMemoire);
     }
@@ -97,11 +79,10 @@ public class MemoireService {
         memoireDB.setActive(memoire.getActive());
         memoireDB.setTelechargement(memoire.getTelechargement());
         memoireDB.setVue(memoire.getVue());
-        memoireDB.setCategorie(memoire.getCategorie());
         memoireDB.setTheme(memoire.getTheme());
         memoireDB.setUrlFile(memoire.getUrlFile());
         memoireDB.setJury(memoire.getJury());
-        memoireDB.setKeyWorlds(memoire.getKeyWorlds());
+        memoireDB.setKeyworlds(memoire.getKeyworlds());
 
         return memoireRepo.save(memoireDB);
     }
@@ -114,16 +95,12 @@ public class MemoireService {
     }
 
     public List<Memoire> getListMemoireByKeyWorlds(String keyWorld){
-        KeyWorlds keyWorlds = keyWorldsRepo.findByName(keyWorld);
-        if (keyWorlds == null){
-            throw new NotFoundException("Aucune entree avec cette valeur");
-        }
         if (memoireRepo.findAll().isEmpty()){
             throw new NotFoundException("Aucun memoire dans la base de donnee");
         }
         List<Memoire> memoireList = new ArrayList<>();
         for (Memoire memoire: memoireRepo.findAll()){
-            if (memoire.getKeyWorlds().contains(keyWorlds)){
+            if (memoire.getKeyworlds().equals(keyWorld)){
                 memoireList.add(memoire);
             }
         }
@@ -214,18 +191,30 @@ public class MemoireService {
         return memoireList;
     }
 
-    public List<Memoire> getListMemoireByCategorie(String label){
-        Categorie categorie = categorieRepo.findByLabel(label);
-        if (categorie == null){
-            throw new NotFoundException("Aucune entree avec cette valeur");
+    public List<Memoire> getListMemoireByOption(String label){
+        String level3 = label+" "+3;
+        String level5 = label+" "+5;
+        Parcours parcours3 = parcoursService.getByLabel(level3);
+        Parcours parcours5 = parcoursService.getByLabel(level5);
+        List<Etudiant> etudiantList3 = new ArrayList<>();
+        List<Etudiant> etudiantList5 = new ArrayList<>();
+        if (parcours3 != null){
+            etudiantList3 = etudiantService.getListEtudiantByParcoursSimple(parcours3.getLabel());
+        }
+        if (parcours5 != null){
+            etudiantList5 = etudiantService.getListEtudiantByParcoursSimple(parcours5.getLabel());
+        }
+
+        etudiantList3.addAll(etudiantList5);
+        if (etudiantList3.isEmpty()){
+            throw new NotFoundException("Aucun memoire dans la base de donnee pour l'option: "+ label);
         }
         if (memoireRepo.findAll().isEmpty()){
-            throw new NotFoundException("Aucun memoire dans la base de donnee");
+            throw new NotFoundException("Aucun memoire dans la base de donnee pour l'option: "+ label);
         }
         List<Memoire> memoireList = new ArrayList<>();
         for (Memoire memoire: memoireRepo.findAll()){
-            Categorie cat = categorieRepo.findById(memoire.getCategorie().getId()).orElse(null);
-            if (cat.getLabel().equals(categorie.getLabel())){
+            if (etudiantList3.contains(memoire.getEtudiant())){
                 memoireList.add(memoire);
             }
         }

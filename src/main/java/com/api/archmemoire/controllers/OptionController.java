@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/option")
+@RequestMapping("/api/v1/admin/option")
 public class OptionController {
 
     private OptionService optionService;

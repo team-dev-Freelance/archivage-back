@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/inscription")
+@RequestMapping("/api/v1/admin/inscription")
 public class InscriptionController {
 
     private InscriptionService inscriptionService;

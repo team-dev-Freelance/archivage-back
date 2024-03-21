@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/anneeAcademique")
+@RequestMapping("/api/v1/admin/anneeAcademique")
 public class AnneeAcademiqueController {
 
     private AnneeAcademiqueService anneeAcademiqueService;

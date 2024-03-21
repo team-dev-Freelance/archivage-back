@@ -1,5 +1,6 @@
 package com.api.archmemoire.controllers;
 
+import com.api.archmemoire.dto.Password;
 import com.api.archmemoire.dto.UtilisateurDto;
 import com.api.archmemoire.entities.Utilisateur;
 import com.api.archmemoire.services.UtilisateurService;
@@ -23,11 +24,6 @@ public class UtilisateurController {
         this.utilisateurService = utilisateurService;
     }
 
-    @GetMapping()
-    public String login(){
-        return "connecter";
-    }
-
     @PostMapping("/user/add")
     public ResponseEntity<UtilisateurDto> saveUser(@RequestBody Utilisateur utilisateur){
         return new ResponseEntity<>(utilisateurService.addUser(utilisateur), HttpStatus.OK);
@@ -48,10 +44,10 @@ public class UtilisateurController {
         return new ResponseEntity<>(utilisateurService.getByEmail(email), HttpStatus.OK);
     }
 
-//    @GetMapping("/user/changePassword/{id}")
-//    public ResponseEntity<String> changedPassword(@PathVariable Long id, @RequestBody Password password) throws Exception {
-//        return new ResponseEntity<>(utilisateurService.changePassword(id, password.getOldPassword(), password.getNewPassword()), HttpStatus.OK);
-//    }
+    @GetMapping("/user/changePassword/{id}")
+    public ResponseEntity<String> changedPassword(@PathVariable Long id, @RequestBody Password password) throws Exception {
+        return new ResponseEntity<>(utilisateurService.changePassword(id, password.getOldPassword(), password.getNewPassword()), HttpStatus.OK);
+    }
 
     @PutMapping("/user/update/{id}")
     public ResponseEntity<UtilisateurDto> updateUserById(@PathVariable Long id, @RequestBody Utilisateur utilisateur){

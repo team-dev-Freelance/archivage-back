@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/v1/admin/fichier")
+@RequestMapping("/api/v1/user/fichier")
 public class FichierController {
 
     private FichierService fichierService;

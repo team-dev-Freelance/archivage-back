@@ -17,4 +17,6 @@ public interface InscriptionRepo extends JpaRepository<Inscription, Long> {
     List<Inscription> findAllByParcoursAndAnneeAcademiqueAndActive(Parcours parcours, AnneeAcademique anneeAcademique, boolean b);
 
     List<Inscription> findAllByParcoursAndAnneeAcademique(Parcours parcours, AnneeAcademique anneeAcademique);
+
+    List<Inscription> findAllByParcours(Parcours parcours);
 }

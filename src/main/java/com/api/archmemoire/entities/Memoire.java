@@ -1,6 +1,5 @@
 package com.api.archmemoire.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +26,9 @@ public class Memoire implements Serializable {
     @Column(name = "URLFILE", unique = true, nullable = false)
     private String urlFile;
 
+    @Column(name = "KEYWORLDS", nullable = false)
+    private List<String> keyworlds;
+
     @Column(name = "VUE")
     private Integer vue = 0;
 
@@ -37,16 +39,10 @@ public class Memoire implements Serializable {
     private Boolean active = true;
 
     @ManyToOne
-    @JoinColumn(name = "CATEGORIE_ID")
-    private Categorie categorie;
-
-    @ManyToOne
     @JoinColumn(name = "ETUDIANT_ID")
     private Etudiant etudiant;
 
     @ManyToMany(mappedBy = "memoires", cascade = CascadeType.ALL)
     private List<Jury> jury = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "memoires", cascade = CascadeType.ALL)
-    private List<KeyWorlds> keyWorlds = new ArrayList<>();
 }

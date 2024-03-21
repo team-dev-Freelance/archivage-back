@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/niveau")
+@RequestMapping("/api/v1/admin/niveau")
 public class NiveauController {
 
     private NiveauService niveauService;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/memoire")
+@RequestMapping("/api/v1/admin/memoire")
 @CrossOrigin("*")
 public class MemoireController {
 
@@ -41,9 +41,9 @@ public class MemoireController {
         return new ResponseEntity<>(memoireService.getListMemoireByKeyWorlds(keyworld), HttpStatus.OK);
     }
 
-    @GetMapping("/findByCategorie")
-    public ResponseEntity<List<Memoire>> getMemoireByCategorie(@RequestParam String name){
-        return new ResponseEntity<>(memoireService.getListMemoireByCategorie(name), HttpStatus.OK);
+    @GetMapping("/findByOption")
+    public ResponseEntity<List<Memoire>> getMemoireByOption(@RequestParam String label){
+        return new ResponseEntity<>(memoireService.getListMemoireByOption(label), HttpStatus.OK);
     }
 
     @GetMapping("/findByEtudiant")

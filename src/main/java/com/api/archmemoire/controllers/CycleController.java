@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/cycle")
+@RequestMapping("/api/v1/admin/cycle")
 public class CycleController {
 
     private CycleService cycleService;

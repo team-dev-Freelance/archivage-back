@@ -5,6 +5,7 @@ import com.api.archmemoire.entities.Utilisateur;
 import com.api.archmemoire.exceptions.NotFoundException;
 import com.api.archmemoire.repositories.UtilisateurRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 public class UtilisateurService {
 
     private UtilisateurRepo utilisateurRepo;
-//    private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UtilisateurService(UtilisateurRepo utilisateurRepo) {
@@ -82,7 +83,7 @@ public class UtilisateurService {
     }
 
     public UtilisateurDto getByEmail(String email){
-        Utilisateur utilisateur =  utilisateurRepo.findByEmail(email);
+        Utilisateur utilisateur =  utilisateurRepo.findByEmail(email).orElse(null);
         if (utilisateur == null){
             throw new NotFoundException("Aucun utilisateur avec l'email : " + email + "n'a ete trouve");
         }
@@ -96,23 +97,23 @@ public class UtilisateurService {
     }
 
 //    Modifier un mot de passe
-//    public String changePassword(Long id, String oldPassword, String newPassword) throws Exception {
-//        Utilisateur utilisateur = utilisateurRepo.findById(id)
-//                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + id));
-//        if (!passwordEncoder.matches(oldPassword, utilisateur.getPassword())) {
-//            throw new IllegalArgumentException("L'ancien mot de passe fourni est incorrect.");
-//        }
-//        if (oldPassword.equals(newPassword)) {
-//            throw new IllegalArgumentException("Le nouveau mot de passe ne peut pas être le même que l'ancien.");
-//        }
-//        if (newPassword.length() < 8 || !containsLetterAndDigit(newPassword)) {
-//            throw new IllegalArgumentException("Le nouveau mot de passe doit avoir au moins 8 caractères et contenir à la fois des lettres et des chiffres.");
-//        }
-//        String encodedPassword = passwordEncoder.encode(newPassword);
-//        utilisateur.setPassword(encodedPassword);
-//        utilisateurRepo.save(utilisateur);
-//        throw new Exception("Modification effectuee avec succes");
-//    }
+    public String changePassword(Long id, String oldPassword, String newPassword) throws Exception {
+        Utilisateur utilisateur = utilisateurRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Utilisateur non trouvé avec l'ID : " + id));
+        if (!passwordEncoder.matches(oldPassword, utilisateur.getPassword())) {
+            throw new IllegalArgumentException("L'ancien mot de passe fourni est incorrect.");
+        }
+        if (oldPassword.equals(newPassword)) {
+            throw new IllegalArgumentException("Le nouveau mot de passe ne peut pas être le même que l'ancien.");
+        }
+        if (newPassword.length() < 8 || !containsLetterAndDigit(newPassword)) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit avoir au moins 8 caractères et contenir à la fois des lettres et des chiffres.");
+        }
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        utilisateur.setPassword(encodedPassword);
+        utilisateurRepo.save(utilisateur);
+        throw new Exception("Modification effectuee avec succes");
+    }
 
     private boolean containsLetterAndDigit(String str) {
         boolean containsLetter = false;

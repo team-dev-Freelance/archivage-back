@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-//@RequestMapping("/api/v1/admin/departement")
+@RequestMapping("/api/v1/admin/departement")
 public class DepartementController {
 
     private DepartementService departementService;

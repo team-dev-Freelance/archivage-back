@@ -222,4 +222,27 @@ public class EtudiantService {
         }
         return etudiantList;
     }
+
+    public List<Etudiant> getListEtudiantByParcoursSimple(String label) {
+        List<Etudiant> etudiantList = new ArrayList<>();
+        Parcours parcours = parcoursService.getByLabel(label);
+
+        if (parcours == null){
+            throw new NotFoundException("Aucun parcours avec le label : "+label + " dans la base de donnee");
+        }
+
+        List<Inscription> inscriptions = inscriptionRepo.findAllByParcours(parcours);
+        if (inscriptions.isEmpty()){
+            throw new NotFoundException("Aucune inscription pour le parcours : "+label + " dans la base de donnee");
+        }
+        for (Inscription inscription : inscriptions){
+            Etudiant etudiant = getById(inscription.getEtudiant().getId());
+            etudiantList.add(etudiant);
+        }
+
+        if (etudiantList.isEmpty()){
+            throw new NotFoundException("Aucun etudiant inscrit au parcours : "+label);
+        }
+        return etudiantList;
+    }
 }

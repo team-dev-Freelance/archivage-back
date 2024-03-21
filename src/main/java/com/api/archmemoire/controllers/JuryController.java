@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/jury")
+@RequestMapping("/api/v1/admin/jury")
 @CrossOrigin("*")
 public class JuryController {
 
