@@ -1,13 +1,18 @@
 package com.api.archmemoire.controllers;
 
 import com.api.archmemoire.dto.FichierDto;
+import com.api.archmemoire.dto.RequestFile;
 import com.api.archmemoire.entities.Fichier;
+import com.api.archmemoire.repositories.UtilisateurRepo;
 import com.api.archmemoire.services.FichierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 @RestController
@@ -16,15 +21,32 @@ import java.util.List;
 public class FichierController {
 
     private FichierService fichierService;
+    private UtilisateurRepo utilisateurRepo;
 
     @Autowired
-    public FichierController(FichierService fichierService) {
+    public FichierController(FichierService fichierService, UtilisateurRepo utilisateurRepo) {
         this.fichierService = fichierService;
+        this.utilisateurRepo = utilisateurRepo;
     }
 
-    @PostMapping("/add/{id}")
-    public ResponseEntity<FichierDto> sendFile(@PathVariable Long id, @RequestBody Fichier fichier) throws Exception {
-        return new ResponseEntity<>(fichierService.sendFile(id, fichier), HttpStatus.OK);
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FichierDto> sendFile(RequestFile request) throws Exception {
+
+        Fichier fichier = new Fichier();
+        String dir = System.getProperty("user.dir");
+        String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename();
+        fichier.setUrlJointPieces(url);
+        fichier.setNom(request.getNom());
+        fichier.setEmailExpediteur(request.getEmailExpediteur());
+        fichier.setUtilisateur(utilisateurRepo.findById(request.getUserId()).orElse(null));
+        File convertFile = new File(url);
+        convertFile.createNewFile();
+        try(FileOutputStream out = new FileOutputStream(convertFile)){
+            out.write(request.getFile().getBytes());
+        }catch (Exception exe){
+            exe.printStackTrace();
+        }
+        return new ResponseEntity<>(fichierService.sendFile(fichier), HttpStatus.OK);
     }
 
     @GetMapping("/boite/{id}")

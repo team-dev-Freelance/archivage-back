@@ -1,6 +1,7 @@
 package com.api.archmemoire.services;
 
 import com.api.archmemoire.dto.UtilisateurDto;
+import com.api.archmemoire.entities.Role;
 import com.api.archmemoire.entities.Utilisateur;
 import com.api.archmemoire.exceptions.NotFoundException;
 import com.api.archmemoire.repositories.UtilisateurRepo;
@@ -129,6 +130,28 @@ public class UtilisateurService {
             }
         }
         return false;
+    }
+
+    public List<UtilisateurDto> getAllUserByRole(Role role){
+        if (utilisateurRepo.findAll().isEmpty()){
+            throw new NotFoundException("Aucun enregistrement dans la base de donnee");
+        }
+        List<UtilisateurDto> utilisateurDtoList = new ArrayList<>();
+        for (Utilisateur utilisateur: utilisateurRepo.findAll()){
+            if (utilisateur.getRole().equals(role)){
+                UtilisateurDto utilisateurDto = new UtilisateurDto();
+                utilisateurDto.setActive(utilisateur.getActive());
+                utilisateurDto.setRole(utilisateur.getRole());
+                utilisateurDto.setEmail(utilisateurDto.getEmail());
+                utilisateurDto.setNom(utilisateur.getUsername());
+                utilisateurDto.setId(utilisateur.getId());
+                utilisateurDtoList.add(utilisateurDto);
+            }
+        }
+        if (utilisateurDtoList.isEmpty()){
+            throw new NotFoundException("Aucun enregistrement dans la base de donnee");
+        }
+        return utilisateurDtoList;
     }
 
     public String deleteUser(Long id){

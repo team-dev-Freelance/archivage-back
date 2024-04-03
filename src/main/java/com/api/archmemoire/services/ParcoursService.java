@@ -46,6 +46,9 @@ public class ParcoursService {
             throw new NotFoundException("Aucun resultat avec ces donnees");
         }
         Parcours parcours = parcoursRepo.findByOptionAndNiveau(option, niveau).orElse(null);
+        if (parcours == null){
+            throw new NotFoundException("Aucun resultat avec ces donnees");
+        }
         return parcours;
     }
 

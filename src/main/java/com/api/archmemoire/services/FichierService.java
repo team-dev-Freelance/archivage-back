@@ -28,16 +28,16 @@ public class FichierService {
         this.utilisateurRepo = utilisateurRepo;
     }
 
-    public FichierDto sendFile(Long id, Fichier fichier) throws Exception {
-        Utilisateur utilisateur = utilisateurRepo.findById(id).orElse(null);
+    public FichierDto sendFile(Fichier fichier) throws Exception {
+        Utilisateur utilisateur = utilisateurRepo.findByEmail(fichier.getEmailExpediteur()).orElse(null);
         if (utilisateur == null){
-            throw new NotFoundException("L'expediteur du mail est inconnu");
+            throw new NotFoundException("L'expediteur du fichier est inconnu");
         }else if (utilisateur.getActive().equals(false)){
             throw new NotFoundException("Utilisateur(expediteur) desactiver");
         }
         Utilisateur user = utilisateurRepo.findById(fichier.getUtilisateur().getId()).orElse(null);
         if (user.getActive().equals(false)){
-            throw new NotFoundException("Utilisateur(destinataire) du mail est inconnu");
+            throw new NotFoundException("Utilisateur(destinataire) du fichier est inconnu");
         }
         KeyPair keyPair = GeneratorKey.generateKeyPair();
         if (keyPair != null){
@@ -89,7 +89,7 @@ public class FichierService {
                     ChiffrementService chiffrementService = new ChiffrementService();
                     decryptedMessage = chiffrementService.decryptContent(fichier.getNom(), fichier.getSecretKey(), privateKey);
                 }else {
-                    throw new Exception("Mail corrompu");
+                    throw new Exception("Fichier corrompu");
                 }
                 FichierDto fichierDto = new FichierDto();
                 fichierDto.setId(fichier.getId());
@@ -103,12 +103,46 @@ public class FichierService {
         return mailDtoList;
     }
 
+    public List<FichierDto> boiteEnvoi(Long id) throws Exception {
+        Utilisateur utilisateur = utilisateurRepo.findById(id).orElse(null);
+//        String password = "koire@0312";
+        if (utilisateur == null){
+            throw new NotFoundException("Aucun compte avec l'id : " + id + "n'a ete trouve");
+        }
+        List<FichierDto> mailDtoList = new ArrayList<>();
+        for (Fichier fichier : fichierRepo.findAll()){
+            Utilisateur user = utilisateurRepo.findByEmail(fichier.getEmailExpediteur()).orElse(null);
+            if (user.getEmail().equals(utilisateur.getEmail())){
+                String decryptedMessage = "";
+
+                PrivateKey privateKey = KeyEncryption.decryptPrivateKey(fichier.getPrivateKey());
+                PublicKey publicKey = KeyEncryption.decryptPublicKey(fichier.getPublicKey());
+                boolean isValid = FichierSignature.verifySignature(fichier.getNom(), fichier.getSignature(), publicKey);
+                if (!isValid){
+                    ChiffrementService chiffrementService = new ChiffrementService();
+                    decryptedMessage = chiffrementService.decryptContent(fichier.getNom(), fichier.getSecretKey(), privateKey);
+                }else {
+                    throw new Exception("Fichier corrompu");
+                }
+                FichierDto fichierDto = new FichierDto();
+                fichierDto.setId(fichier.getId());
+                fichierDto.setNom(decryptedMessage);
+                fichierDto.setDate(fichier.getDate());
+                fichierDto.setEmailExpediteur(fichier.getEmailExpediteur());
+                fichierDto.setUrlsJointPieces(fichier.getUrlJointPieces());
+                mailDtoList.add(fichierDto);
+            }
+        }
+        return mailDtoList;
+    }
+
+
     public String deleteFile(Long id) throws Exception {
         if (!fichierRepo.existsById(id)) {
-            throw new NotFoundException("Aucun mail avec l'id : " + id + "n'a ete trouve");
+            throw new NotFoundException("Aucun fichier avec l'id : " + id + "n'a ete trouve");
         }
         fichierRepo.deleteById(id);
-        throw new Exception("Mail supprimer");
+        throw new Exception("Fichier supprimer");
     }
 
     public String deleteAllFileUser(Long id) throws Exception {

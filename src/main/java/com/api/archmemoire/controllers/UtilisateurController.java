@@ -2,6 +2,7 @@ package com.api.archmemoire.controllers;
 
 import com.api.archmemoire.dto.Password;
 import com.api.archmemoire.dto.UtilisateurDto;
+import com.api.archmemoire.entities.Role;
 import com.api.archmemoire.entities.Utilisateur;
 import com.api.archmemoire.services.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ public class UtilisateurController {
     @GetMapping("/user/findByEmail")
     public ResponseEntity<UtilisateurDto> getUserByEmail(@RequestParam("email") String email){
         return new ResponseEntity<>(utilisateurService.getByEmail(email), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/findByRole")
+    public ResponseEntity<List<UtilisateurDto>> getUserByRole(@RequestParam("role") Role role){
+        return new ResponseEntity<>(utilisateurService.getAllUserByRole(role), HttpStatus.OK);
     }
 
     @GetMapping("/user/changePassword/{id}")
