@@ -33,19 +33,22 @@ public class FichierController {
     public ResponseEntity<FichierDto> sendFile(RequestFile request) throws Exception {
 
         Fichier fichier = new Fichier();
-        String dir = System.getProperty("user.dir");
-        String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename();
-        fichier.setUrlJointPieces(url);
+        if (!request.getFile().isEmpty()){
+            String dir = System.getProperty("user.dir");
+            String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename();
+            fichier.setUrlJointPieces(url);
+            File convertFile = new File(url);
+            convertFile.createNewFile();
+            try(FileOutputStream out = new FileOutputStream(convertFile)){
+                out.write(request.getFile().getBytes());
+            }catch (Exception exe){
+                exe.printStackTrace();
+            }
+        }
         fichier.setNom(request.getNom());
         fichier.setEmailExpediteur(request.getEmailExpediteur());
         fichier.setUtilisateur(utilisateurRepo.findById(request.getUserId()).orElse(null));
-        File convertFile = new File(url);
-        convertFile.createNewFile();
-        try(FileOutputStream out = new FileOutputStream(convertFile)){
-            out.write(request.getFile().getBytes());
-        }catch (Exception exe){
-            exe.printStackTrace();
-        }
+
         return new ResponseEntity<>(fichierService.sendFile(fichier), HttpStatus.OK);
     }
 
