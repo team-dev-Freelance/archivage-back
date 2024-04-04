@@ -27,7 +27,7 @@ public class Memoire implements Serializable {
     private String urlFile;
 
     @Column(name = "KEYWORLDS", nullable = false)
-    private List<String> keyworlds;
+    private List<String> keyworlds = new ArrayList<>();
 
     @Column(name = "VUE")
     private Integer vue = 0;

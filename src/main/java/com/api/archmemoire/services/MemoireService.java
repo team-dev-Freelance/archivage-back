@@ -58,7 +58,7 @@ public class MemoireService {
                             newJury.getMemoires().add(newMemoire);
                             return newJury;
                         }).collect(Collectors.toList()));
-        
+
         newMemoire.setKeyworlds(memoire.getKeyworlds());
         newMemoire.setEtudiant(memoire.getEtudiant());
 
