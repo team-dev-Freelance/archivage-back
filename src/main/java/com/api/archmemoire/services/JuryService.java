@@ -1,11 +1,13 @@
 package com.api.archmemoire.services;
 
 import com.api.archmemoire.entities.Jury;
+import com.api.archmemoire.entities.STATUT;
 import com.api.archmemoire.exceptions.NotFoundException;
 import com.api.archmemoire.repositories.JuryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +34,22 @@ public class JuryService {
             throw new NotFoundException("Aucun objet trouve avec l'id: "+ id);
         }
         return jury;
+    }
+
+    public List<Jury> getListJuryByStatut(STATUT statut){
+        if (juryRepo.findAll().isEmpty()){
+            throw new NotFoundException("Aucun enregistrement dans la base de donnee");
+        }
+        List<Jury> juryList = new ArrayList<>();
+        for (Jury jury : juryRepo.findAll()){
+            if (jury.getStatut().equals(statut)){
+                juryList.add(jury);
+            }
+        }
+        if (juryList.isEmpty()){
+            throw new NotFoundException("Aucun enregistrement dans la base de donnee");
+        }
+        return juryList;
     }
 
     public List<Jury> getAllJury(){

@@ -1,6 +1,7 @@
 package com.api.archmemoire.controllers;
 
 import com.api.archmemoire.entities.Jury;
+import com.api.archmemoire.entities.STATUT;
 import com.api.archmemoire.services.JuryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,11 @@ public class JuryController {
     @GetMapping("/findAll")
     public ResponseEntity<List<Jury>> getAllJury(){
         return new ResponseEntity<>(juryService.getAllJury(), HttpStatus.OK);
+    }
+
+    @GetMapping("/findByStatut")
+    public ResponseEntity<List<Jury>> getListJuryByStatut(@RequestParam STATUT statut){
+        return new ResponseEntity<>(juryService.getListJuryByStatut(statut), HttpStatus.OK);
     }
 
     @GetMapping("/findById/{id}")
