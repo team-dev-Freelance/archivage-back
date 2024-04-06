@@ -34,8 +34,8 @@ public class MemoireController {
         this.juryRepo = juryRepo;
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Memoire> addMemoire(@RequestBody RequestMemoire request) throws IOException {
+    @PostMapping(value = "/add")
+    public ResponseEntity<Memoire> addMemoire(@ModelAttribute RequestMemoire request) throws IOException {
         Memoire memoire = new Memoire();
         if (!request.getFile().isEmpty()){
             String dir = System.getProperty("user.dir");

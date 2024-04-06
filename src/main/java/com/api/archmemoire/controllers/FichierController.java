@@ -29,8 +29,8 @@ public class FichierController {
         this.utilisateurRepo = utilisateurRepo;
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<FichierDto> sendFile(RequestFile request) throws Exception {
+    @PostMapping(value = "/add")
+    public ResponseEntity<FichierDto> sendFile(@ModelAttribute RequestFile request) throws Exception {
 
         Fichier fichier = new Fichier();
         if (!request.getFile().isEmpty()){
