@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,7 @@ public class FichierController {
         Fichier fichier = new Fichier();
         if (!request.getFile().isEmpty()){
             String dir = System.getProperty("user.dir");
-            String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename();
+            String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename()+new Date();
             fichier.setUrlJointPieces(url);
             File convertFile = new File(url);
             convertFile.createNewFile();

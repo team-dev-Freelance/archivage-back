@@ -23,7 +23,7 @@ public class Memoire implements Serializable {
     @Column(name = "THEME", unique = true, nullable = false)
     private String theme;
 
-    @Column(name = "URLFILE", unique = true, nullable = false)
+    @Column(name = "URLFILE", nullable = false)
     private String urlFile;
 
     @Column(name = "KEYWORLDS", nullable = false)

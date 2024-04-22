@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -39,7 +40,7 @@ public class MemoireController {
         Memoire memoire = new Memoire();
         if (!request.getFile().isEmpty()){
             String dir = System.getProperty("user.dir");
-            String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename();
+            String url = dir+"/src/main/resources/assets/"+request.getFile().getOriginalFilename()+new Date();
             memoire.setUrlFile(url);
             File convertFile = new File(url);
             convertFile.createNewFile();
